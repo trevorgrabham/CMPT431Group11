@@ -1,0 +1,6 @@
+Input graph used: ./input_graphs/web-Google
+Number on nodes in the graph: 916428
+Number on edges in the graph: 5105039
+Calculating average time for 1000 runs.
+Total time: 0.22882
+Average time: 0.00022882

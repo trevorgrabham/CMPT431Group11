@@ -1,0 +1,6 @@
+Input graph used: ./input_graphs/roadNet-CA
+Number on nodes in the graph: 1971281
+Number on edges in the graph: 5533214
+Calculating average time for 1000 runs.
+Total time: 1.86627
+Average time: 0.00186627
