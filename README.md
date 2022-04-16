@@ -27,6 +27,9 @@ make SSSP_parallel_ver1
 ```
 ## Result
 
-<p>Input graph: web-Google (900000+ vertices)<br />
-Thread #      :  1    2     4<br />
-Time(local PC): <4s  30s+  220s+</p>
+<p>Input graph: web-Google (900000+ vertices)</p>
+| Thread number| Time (in second) |
+| ------------ | ---------------- |
+| 1            | <4               |
+| 2            | 30+              |
+| 4            | 220+             |
