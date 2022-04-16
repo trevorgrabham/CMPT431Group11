@@ -1,0 +1,89 @@
+	//std::cout<<"width: "<<width.load()<<std::endl;
+        //neighbor.push_back(source);
+        //partition.push_back(0);
+        //Setup Partition statically
+        /*
+        std::cout<<"setup partition\n";
+        int partition_idx = 0;
+ 
+        int currV_idx = -1;
+        uintV v = source;
+        bool isChanged = false;
+        uintE width=g.vertices_[source].getOutDegree();
+        uintE next_width = 0;
+        int count = 1;
+ 
+        while(true){
+                //std::cout<<"Current in " << v << std::endl;
+                uintE out_degree = g.vertices_[v].getOutDegree();
+ 
+                for(uintE i = 0; i < out_degree; i++){
+                        uintV u = g.vertices_[v].getOutNeighbor(i);
+                        //std::cout<<"Goes to " << u << std::endl;
+                        
+                        if(record[v] == 0){
+                                next_width += g.vertices_[u].getOutDegree();
+                                //std::cout<<"Next width: " << next_width << "\n";
+                                neighbor.push_back(u);
+                                std::cout<< u <<"\n";
+                                isChanged = true;
+                                partition_idx++;
+                                if(visited[u] == 0){
+                                        //printf("%dvisited\n", u);
+                                        min_path[u] = length.load();
+                                        count++;
+                                        visited[u] = 1;
+					}
+                        }
+                        width--;
+                        //printf("width: %d\n", width);
+                }
+                if(record[v] == 0){
+                        record[v] = 1;
+                        if(out_degree >0){
+                        partition.push_back(partition_idx);
+                        //printf("partition push %d\n", partition_idx);
+                        vertex_ptr.push_back(v);
+                        //printf("vertex_ptr push %d\n", v);
+                        }
+                }
+
+                if(width == 0){
+                        if(!isChanged)
+                                break;
+                        std::cout<<"next level\n\n";
+                        //std::cout<<"Next width: " << next_width << "\n";
+                        if(count < n){
+                                width_ptr.push_back(neighbor.size());
+                                //std::cout<<"width push: " << neighbor.size()<< "\n";
+                                //printf("\n");
+                        }
+                        width = next_width;
+                        next_width = 0;
+                        isChanged = false;
+                        length++;
+                }
+                currV_idx++;
+                //std::cout<<"currV_idx " << currV_idx << "\n";
+                if(currV_idx<neighbor.size()){
+                        v = neighbor[currV_idx];
+                        //printf("Next source: %d\n", neighbor[currV_idx]);
+			}
+                else{
+                        std::cout<<"currV_idx " << currV_idx;
+                        std::cout<<" greater than " << neighbor.size() << std::endl;
+                        std::cout<<"Overflow\n";
+                        printf("width: %d\n", width);
+                        printf("isChanged: %d\n", isChanged);
+                        printf("partition_idx: %d\n", partition_idx);
+                        delete[] record;
+                        delete[] visited;
+                        return;
+                }
+
+        }
+        width_ptr.push_back(neighbor.size());
+	curr_end = width_ptr.begin();
+        //sourceV = source;
+        */
+
