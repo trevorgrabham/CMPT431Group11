@@ -16,30 +16,30 @@ static std::vector<double> min_path; //Minimum path length from source to
 //static std::vector<int> partition;
 //static std::vector<int> vertex_ptr;
 //static std::vector<int> width_ptr;
-static std::vector<uintV> neighbor;
+static std::vector<uintV> neighbor;// Work set of vertices waiting to be traversed
 static uintV source;
 
 std::atomic<bool> is_changed(false);
-std::atomic<bool> degree_zero(false);
-std::atomic<bool> finished(false);
+//std::atomic<bool> degree_zero(false);
+//std::atomic<bool> finished(false);
 
 std::atomic<int> lock(0);
 std::atomic<int> lock_(0);
 
-std::atomic<uintE> width(1);
+std::atomic<uintE> width(1);// Current depth
 std::atomic<uintE> next_width(0);
-std::atomic<int> currV_idx(-1);
-std::atomic<int> length(1);
-std::atomic<int> count(1);
+std::atomic<int> currV_idx(-1);// Current source vertex v = neighbor(currV_idx) 
+std::atomic<int> length(1);// Distance from source, same for vertices of the same depth
+std::atomic<int> count(1);// Number of v with visited[v] = 1
 
 static int flag = 0;
 static int flag_ = 0;
-static int *record;
-static int *visited;
-static bool isEnd = false;
-static uintV v = source;
+static int *record;// record[v] = 1 if v has all its neighbors been traversed
+static int *visited;// visited[v] = 1 if v as a neighbor of others has been traversed
+static bool isEnd = false;//Search finished, all threads can leave
+static uintV v = source; 
 
-
+//Two independent of atomic locks, only one is being used
 void wait_(){
         while(true){
                 while(lock_.load());
@@ -63,14 +63,20 @@ void wait(){
 void signal(){lock.store(0);}
 
 void parallelBFS(int id, int n_threads, Graph *g, struct CustomBarrier *barrier1, struct CustomBarrier *barrier2){
-	barrier1->wait();
+	timer t;
+	t.start(); 
+
 	uintV n = g->n_;
+	//isLast: TRUE is this thread get the trun to process the last neighbor of a vertex
 	bool isLast = false;
 	while(true){
 		//isLast = true;
-		if(id>=9)
+		/*if(id>=0)
 			printf("Thread %d in A\n", id);
+		*/
 		//std::cout<<"Current in " << v << std::endl;
+
+	//For each vertex
 		uintE out_degree = g->vertices_[v].getOutDegree();
 		//printf("out_degree: %d\n", out_degree);
 
@@ -80,6 +86,7 @@ void parallelBFS(int id, int n_threads, Graph *g, struct CustomBarrier *barrier1
 			//printf("Thread %d, vertex %d neighbor(%d) %d\n", id, v, i, u);
 			//std::cout<<"Goes to " << u << std::endl;
 			
+			//If this vertex is been visit as source the first time
 			if(record[v] == 0){
 				next_width += g->vertices_[u].getOutDegree();
 				//std::cout<<"Next width: " << next_width << "\n";
@@ -93,18 +100,21 @@ void parallelBFS(int id, int n_threads, Graph *g, struct CustomBarrier *barrier1
 					min_path[u] = length.load();
 					count++;
 					printf("(%d / %d)\n", count.load(), n);
+					//Mark u as a neighbor of other vertices has been visited
 					visited[u] = 1;
 				}
 			}
+			//One vertex on the same depth has been visited
 			width--;
+
 			if(i == out_degree -1)
 				isLast = true;
 			
 			//printf("width: %d\n", width);
 		}
 		barrier1->wait();
+		//If this vertex 0 out_degree, thread 0 is set to the last thread
 		if(out_degree == 0){
-			degree_zero.store(true);
 			if(id == 0){
 				isLast = true;
 			}
@@ -112,6 +122,8 @@ void parallelBFS(int id, int n_threads, Graph *g, struct CustomBarrier *barrier1
 
 		//if(id>=0)
 			//printf("Thread %d leave for loop\n", id);
+
+		//Mark v as a source is been visited
 		if((record[v] == 0)&&isLast){
 			//printf("Thread %d update record[%d]\n", id, v);
 			record[v] = 1;
@@ -120,8 +132,12 @@ void parallelBFS(int id, int n_threads, Graph *g, struct CustomBarrier *barrier1
 		if(id>=0)
 			printf("Thread %d leave part B\n", id);
 		*/
+
+
+		//All neighbors of vertices on the current depth have been traversed
 		if(width == 0){
 			if(is_changed.load() == false){
+				thread_time[id] = t.stop();
 				isEnd = true;
 				//printf("No Changed, thread %d left\n", id);
 				barrier1->wait();
@@ -129,8 +145,8 @@ void parallelBFS(int id, int n_threads, Graph *g, struct CustomBarrier *barrier1
 			}
 			
 			if(isLast){
-				if(id>=0)
-					printf("Thread %d enter partC\n", id);
+				//if(id>=0)
+				//	printf("Thread %d enter partC\n", id);
 				width.store(next_width.load());
 				//printf("Width update to %d\n", width.load());
 				next_width.store(0);
@@ -141,6 +157,10 @@ void parallelBFS(int id, int n_threads, Graph *g, struct CustomBarrier *barrier1
 		/*if(id>=0)
 			printf("Thread %d leave part C\n", id);
 		*/
+		
+		//Update the source vertex v to be processed next
+		//if v exceed the size of neighbor (workset of source vertex)
+		//all thread exit
 		if(isLast){
 			/*
 			if(id>=0)
@@ -168,13 +188,13 @@ void parallelBFS(int id, int n_threads, Graph *g, struct CustomBarrier *barrier1
 			}
 			//std::cout<<"next level\n\n";
 		}
-		degree_zero.store(false);
 		isLast = false;
 		//printf("Thread %d wait\n", id);
 		barrier1->wait();
 		//printf("Thread %d left\n", id);
 		if(isEnd){
 			//std::cout<< id << "leave\n";
+			thread_time[id] = t.stop();
 			return;
 		}
 	}
@@ -188,7 +208,7 @@ void graphSearchParallel(Graph& g, uint n_threads){
 		return;
 	}
 
-	//Initialize the path length from the source to other vertices to be infinity
+	//Initialize the path length from the source to other vertices to be infinity (n+1)
 	//and 0 for the source
 	for (uintV i = 0; i < n; i++) {
 		if(i == source)
@@ -197,8 +217,8 @@ void graphSearchParallel(Graph& g, uint n_threads){
 			min_path.push_back(n+1);
 	}
 	
-	//for(int i = 0; i < n_threads; i++)
-	//	thread_time.push_back(0.0);
+	for(int i = 0; i < n_threads; i++)
+		thread_time.push_back(0.0);
 
 	record = new int[n]; 
 	visited = new int[n]; 
@@ -228,6 +248,11 @@ void graphSearchParallel(Graph& g, uint n_threads){
 			th.join();
 	}
 	time_taken = t.stop();
+
+	//Output time and selected results                                      
+        std::cout << "Thread id, time taken\n";
+        for(int i = 0; i < n_threads; i++)
+                std::cout << i << ", " << thread_time[i] << std::endl;
 
 	std::cout << "Selected results: \n";
 	std::cout << "Source, destination, length\n";
