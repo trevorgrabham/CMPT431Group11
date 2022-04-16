@@ -28,6 +28,5 @@ make SSSP_parallel_ver1
 ## Result
 
 <p>Input graph: web-Google (900000+ vertices)</p>
-Thread # | #1 | #2 | #4 |
---- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
-Seconds | 4< | 30+ | 220+ |
+<p>Thread # | #1 | #2 | #4 |<br />
+   Seconds | 4< | 30+ | 220+ |</p>
