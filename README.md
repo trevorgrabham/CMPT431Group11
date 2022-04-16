@@ -2,12 +2,12 @@
 
 ## Algorithm
 
-Perform a Breath First Search started at source vertex, all vertices in the same
-depth are within the same distance to the source. If the current depth no vertices has their distence updated, algorithm terminated.
+<p>Perform a Breath First Search started at source vertex, all vertices in the same
+depth are within the same distance to the source. If the current depth no vertices has their distence updated, algorithm terminated.</p>
 
-`static_partition.cpp` has the code for pre-assign the workset used by threads, all vertices are pushed to `neighbor` by BFS
-`partition[i]` is the index in `neighbor` of the first neighbor of the i-th vertex `vertex-ptr[i]`
-`width-ptr` is the index in `neighbor` of the first vertex of depth i. (Based on the idea of CSR/CSC matrix format).
+`static_partition.cpp` has the code for pre-assign the workset used by threads, all vertices are pushed to `neighbor` by BFS<br />
+`partition[i]` is the index in `neighbor` of the first neighbor of the i-th vertex `vertex-ptr[i]`<br />
+`width-ptr` is the index in `neighbor` of the first vertex of depth i. (Based on the idea of CSR/CSC matrix format).</p>
 
 ## Compile
 
@@ -27,6 +27,6 @@ make SSSP_parallel_ver1
 ```
 ## Result
 
-Input graph: web-Google (900000+ vertices)
-Thread #      :  1    2     4
-Time(local PC): <4s  30s+  220s+
+<p>Input graph: web-Google (900000+ vertices)<br />
+Thread #      :  1    2     4<br />
+Time(local PC): <4s  30s+  220s+</p>
