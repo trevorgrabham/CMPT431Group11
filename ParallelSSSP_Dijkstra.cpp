@@ -35,6 +35,8 @@ typedef std::pair<uintV,uintV> pair;
 void findShortestPaths(int i, int nThreads, uintV v0, uintV vn, Graph const &g,
 					   std::vector<uintV> &distance, std::vector<uintV> &path,
 					   std::priority_queue<pair, std::vector<pair>, std::greater<pair>> &Q, CustomBarrier &b) {
+  std::vector<uintV> ldistance(g.n_, g.n_);
+  std::vector<uintV> lpath(g.n_, g.n_);
 
   // Find all shortest paths
   while (!Q.empty()) {
@@ -52,20 +54,25 @@ void findShortestPaths(int i, int nThreads, uintV v0, uintV vn, Graph const &g,
     // determine shortest path for all neighbors
     uintE out_degree = g.vertices_[v].getOutDegree();
     for (uintE e = 0; e < out_degree; e++) {
-      if (e%nThreads == i) { // split neighbors equally (option 1)
+      // if (e%nThreads == i) { // split neighbors equally (option 1)
           uintV u = g.vertices_[v].getOutNeighbor(e);
-      // if (u >= v0 && u < vn) { // pre assigned node set (option 2)
+        if (u >= v0 && u < vn) { // pre assigned node set (option 2)
           uintV new_path_dist = v_distance + 1; // all edge weights are 1
-          if (distance[u] > new_path_dist) {
+          if (ldistance[u] > new_path_dist) {
             // shorter path found
-            path[u] = v;
-            distance[u] = new_path_dist;
+            lpath[u] = v;
+            ldistance[u] = new_path_dist;
             std::lock_guard<std::mutex> lk(m);
             Q.push(std::make_pair(new_path_dist, u));
           }
     	}
     }
 	  b.wait();
+  }
+
+  for (uintV v = v0; v < vn; v++) {
+    distance[v] = ldistance[v];
+    path[v] = lpath[v];
   }
 }
 
