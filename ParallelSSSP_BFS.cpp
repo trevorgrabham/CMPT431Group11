@@ -39,9 +39,7 @@ void findShortestPaths(int id, int nThreads, Graph const &g, std::vector<uintV> 
     // all processes must be on the same level
     if (distance[v] > level) {
       uintV l = level;
-      // std::cout << "{"<<id<<"}"<< " wait1\n";
       b.wait();
-      // std::cout << "{"<<id<<"}"<< " wait2\n";
       level.compare_exchange_weak(l, l+1); // only first process increments level
       b.wait();
     }
@@ -57,8 +55,10 @@ void findShortestPaths(int id, int nThreads, Graph const &g, std::vector<uintV> 
       }
     }
 	}
-  if (++done == nThreads) b.wait();
+
+  done++;
   while (done < nThreads) b.wait();
+  b.open();
 }
 
 void ParallelBFS(Graph const &g, uintV source, std::vector<uintV> &distance, 

@@ -53,6 +53,11 @@ struct CustomBarrier {
     my_cv_.wait(u_lock, [&] { return (c != barrier_call_); });
     //  Condition has been reached. return
   }
+
+  void open() {
+    barrier_call_=-1;
+    my_cv_.notify_all();
+  }
 };
 
 // CAS operation
