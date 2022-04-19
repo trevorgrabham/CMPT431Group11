@@ -80,7 +80,7 @@ void ParallelDijkstra(Graph const &g, uintV source, std::vector<uintV> &distance
 					   std::vector<uintV> &path, int nThreads) {
   timer t1;
   t1.start();
-   
+  
   std::thread threads[nThreads];
 
   // Divide the nodes across the threads
@@ -96,7 +96,7 @@ void ParallelDijkstra(Graph const &g, uintV source, std::vector<uintV> &distance
   std::priority_queue<pair, std::vector<pair>, std::greater<pair>> Q; //shared minimum priority queue
   Q.push(std::make_pair(0, source));
   distance[source] = 0;
-  path[source] = 0;
+  path[source] = source;
   CustomBarrier b(nThreads);
 
   for (int i = 0; i < nThreads; i++) {
