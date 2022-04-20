@@ -1,28 +1,45 @@
 #include "serial.h"
 
-int main(int argc, char** argv) {
-  bool** g = new bool*[4];
-  g[0] = new bool[4] {false, true, false, true};
-  g[1] = new bool[4] {true, false, true, true};
-  g[2] = new bool[4] {false, true, false, false};
-  g[3] = new bool[4] {true, true, false, false};
-  int* dist = new int[4];
-  int* prev = new int[4];
-  std::cout << "Running Dijkstra's algorithm\n";
-  SSSP2(dist, prev, g, 4, 0);
-  std::cout << "Algorithm completed\n";
-  std::cout << "Dist: [";
-  for(uint i=0;i<3;i++) {
-    std::cout << dist[i] << ", ";
-  }
-  std::cout << dist[3] << "]\n";
-  std::cout << "Prev: [";
-  for(uint i=0;i<3;i++) {
-    std::cout << prev[i] << ", ";
-  }
-  std::cout << prev[3] << "]\n";
-  delete [] g;
-  delete dist;
-  delete prev;
+int main(int argc, char *argv[]) {
+  cxxopts::Options options(
+      "ParallelSSSP",
+      "Calculate all shortest paths from source - Threads version");
+  options.add_options(
+    "",
+    {
+      {"inputFile", "Input graph file path",
+        cxxopts::value<std::string>()->default_value(
+            "/scratch/input_graphs/roadNet-CA")},
+      {"sourceNode", "Source node ID",
+        cxxopts::value<uintV>()->default_value("0")},      
+      {"output", "Write results to file",
+        cxxopts::value<bool>()->default_value("0")},
+    }
+  );
+
+  auto cl_options = options.parse(argc, argv);
+  uintV output = cl_options["output"].as<bool>();
+  uintV source = cl_options["sourceNode"].as<uintV>();
+  std::string input_file_path = cl_options["inputFile"].as<std::string>();
+
+	std::cout << "Reading Graph\n";
+  Graph g;
+  g.readGraphFromBinary<int>(input_file_path);
+
+  std::cout <<  "Graph Created\n"
+                "n: " << g.n_ << "\n"
+                "m: " << g.m_ << "\n"
+                "SourceNode: " << source << "\n"
+                "Searching for paths...\n";
+
+  int* distance = new int[g.n_];
+  int* path = new int[g.n_];
+
+  SSSP(distance, path, g, source);
+  if (output)
+    writeResults(g, source, distance, path, input_file_path);
+
+  delete distance;
+  delete path;
   return 0;
 }

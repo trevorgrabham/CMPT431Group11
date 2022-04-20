@@ -3,83 +3,57 @@
 */
 #include <limits.h>
 #include <queue>
-#include <tuple>
 
 #include "core/graph.h"
 
-void SSSP2(int* d, int* p, bool** g, int len, int source) {
-  // Local variables
-  int V = len;
-  int v_index = 0;
-  int u;
-  int u_dist;
-  int n_neighbours;
-  int neighbour;
-  std::tuple<int,int> min_tup;
-  std::priority_queue<std::tuple<int,int>, std::vector<std::tuple<int,int>>, std::greater<std::tuple<int,int>>> Q;
+void writeResults(Graph &g, uintV source, int* distance, int* path, std::string input_file_path) {
+  std::string output_file_path = "./output" + input_file_path.substr(input_file_path.find_last_of("/"), input_file_path.length()) + "_s" + std::to_string(source) + ".out";
+  std::cout << "Writing results to " << output_file_path << "\n";
 
-  // Initialize dist, prev, and Q
-  for(;v_index<V;v_index++) {
-    d[v_index] = INT_MAX;
-    p[v_index] = -1;
-    // Q.push(std::tuple<int,int>{INT_MAX, v_index});     // I don't think I need this here, should be able to just add our source, and then add each node as we encounter it. If we don't reach a node then its dist[node] should still be INT_MAX
-  }
-  Q.push(std::tuple<int,int>{0, source});
-  d[source] = 0;
-  p[source] = -1;
+  std::ofstream output_file;
+  output_file.open(output_file_path, std::ios::out);
 
-  // Iterative Loop
-  while(!Q.empty()) {
-    min_tup = Q.top(); 
-    Q.pop();
-    u_dist = std::get<0>(min_tup);
-    u = std::get<1>(min_tup);
-    if(d[u] < u_dist) continue;
-    for(neighbour=0;neighbour<V;neighbour++) {
-      if(!g[u][neighbour]) continue;
-      if(u_dist+1 < d[neighbour]) {
-        d[neighbour] = u_dist+1;
-        p[neighbour] = u;
-        Q.push(std::tuple<int,int>{u_dist+1, neighbour});
-      }
+  output_file << "n: " << g.n_ << "\n"
+                 "m: " << g.m_ << "\n";
+
+  for (uintV v = 0; v < g.n_; v++) {
+    output_file << "v" << v << ": ";
+    if (path[v] == g.n_) {
+      output_file << "no path found\n";
+      continue;
+    } else {
+      output_file << "shortest path = " << distance[v] << "; parent = " << path[v] << "\n";
     }
   }
-  return;
+  output_file.close();
 }
 
-void SSSP(int* d, int* p, Graph* g, int source) {
-  // Local variables
-  int V = g->n_;
-  int v_index = 0;
-  int u;
-  int u_dist;
-  int n_neighbours;
-  int neighbour;
-  std::tuple<int,int> min_tup;
-  std::priority_queue<std::tuple<int,int>, std::vector<std::tuple<int,int>>, std::greater<std::tuple<int,int>>> Q;
+void SSSP(int* dist, int* prev, Graph const &g, int source) {
+  uintV V = g.n_;
+  std::queue<int> Q;
+  uintV vIndex;
+  uintV uIndex;
+  uintV vDist;
+  uintE outDegree;
 
-  // Initialize dist, prev, and Q
-  for(;v_index<V;v_index++) {
-    d[v_index] = INT_MAX;
-    p[v_index] = -1;
+  for(uint i=0;i<V;i++) {
+    dist[i] = INT_MAX;
+    prev[i] = -1;
   }
-  Q.push(std::tuple<int,int>{0, source});
-  d[source] = 0;
-  p[source] = -1;
-
-  // Iterative Loop
+  dist[source] = 0;
+  prev[source] = source;
+  Q.push(source);
   while(!Q.empty()) {
-    min_tup = Q.top(); 
+    vIndex= Q.front();
     Q.pop();
-    u_dist = std::get<0>(min_tup);
-    u = std::get<1>(min_tup);
-    if(d[u] < u_dist) continue;
-    n_neighbours = g->vertices_[u].getOutDegree();
-    for(neighbour=0;neighbour<n_neighbours;neighbour++) {
-      if(u_dist+1 < d[neighbour]) {
-        d[neighbour] = u_dist+1;
-        p[neighbour] = u;
-        Q.push(std::tuple<int,int>{u_dist+1, neighbour});
+    vDist = dist[vIndex];
+    outDegree = g.vertices_[vIndex].getOutDegree();
+    for(uintE i=0;i<outDegree;i++) {
+      uIndex = g.vertices_[vIndex].getOutNeighbor(i);
+      if(dist[uIndex] > dist[vIndex] + 1) {
+        dist[uIndex] = dist[vIndex] + 1;
+        prev[uIndex] = vIndex;
+        Q.push(uIndex);
       }
     }
   }
