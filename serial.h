@@ -37,8 +37,8 @@ void SSSP(int* dist, int* prev, Graph const &g, int source) {
   uintE outDegree;
 
   for(uint i=0;i<V;i++) {
-    dist[i] = INT_MAX;
-    prev[i] = -1;
+    dist[i] = g.n_;
+    prev[i] = g.n_;
   }
   dist[source] = 0;
   prev[source] = source;

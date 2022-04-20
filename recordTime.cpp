@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
   timer t;
   for(uint i=0;i<N_RUNS;i++) {
     t.start();
-    SSSP(dist, prev, &g, 0);
+    SSSP(dist, prev, g, 0);
     total_time += t.stop();
   }
   long double avg_time = total_time / N_RUNS;
