@@ -1,4 +1,4 @@
-#include "serial.h"
+#include "core/serial.h"
 
 int main(int argc, char *argv[]) {
   cxxopts::Options options(
