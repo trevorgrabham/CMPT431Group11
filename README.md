@@ -12,21 +12,19 @@ depth are within the same distance to the source. If the current depth no vertic
 ## Compile
 
 ```bash
-make SSSP_parallel_ver0
-```
-Or
-
-```bash
-make SSSP_parallel_ver1
+make
 ```
 
 ## Run
 
 ```bash
-./SSSP_parallel_ver1 --source 0 --inputFile absolute_path_of_input_graph --nThreads 4
+./serial --source 0 --inputFile absolute_path_of_input_graph
+./ParallelSSSP_BFS --source 0 --inputFile absolute_path_of_input_graph --nThreads 4
+./DistributedSSSP_Dijkstra --source 0 --inputFile absolute_path_of_input_graph
 ```
-## Binary
+
+## Serial Timing
 
 ```bash
-./demo-shortest-path ./testGraph.txt 3
+./recordTime
 ```
