@@ -88,7 +88,7 @@ void ParallelDijkstra(Graph const &g, uintV source, std::vector<uintV> &distance
 
   // Initialize data structures
   distance[source] = 0;
-  path[source] = 0;
+  path[source] = source;
   CustomBarrier b(nThreads);
   mins.resize(nThreads,{0, source});
 

@@ -1,21 +1,16 @@
-ifdef USE_INT
-MACRO = -DUSE_INT
-endif
-
 #compiler setup
 CXX = g++
-CXXFLAGS = -std=c++14 -O3 -pthread $(MACRO)
+CXXFLAGS = -std=c++14 -march=native -pthread -O3 
+LDFLAGS = -Llib -lalloc431 -lpthread
 
-COMMON= core/utils.h core/cxxopts.h core/get_time.h core/graph.h core/quick_sort.h
-SERIAL= SSSP_serial
-PARALLEL= SSSP_parallel_ver0 SSSP_parallel_ver1 ParallelSSSP_Dijkstra ParallelSSSP_Dijkstra2
-ALL= $(SERIAL) $(PARALLEL)
-
+COMMON= core/utils.h core/cxxopts.h core/get_time.h core/graph.h core/quick_sort.h core/allocator.h
+PARALLEL= SSSP_parallel_ver0 SSSP_parallel_ver1 ParallelSSSP_Dijkstra ParallelSSSP_Dijkstra2 ParallelSSSP_BFS
+ALL= $(PARALLEL)
 
 all : $(ALL)
 
-% : %.cpp $(COMMON)
-	$(CXX) $(CXXFLAGS) -o $@ $<
+$(ALL) : % : %.cpp $(COMMON)
+	$(CXX) $(CXXFLAGS) $< $(LDFLAGS) -o $@
 
 .PHONY : clean
 
