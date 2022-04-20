@@ -4,7 +4,7 @@
 #include <limits.h>
 #include <queue>
 
-#include "core/graph.h"
+#include "graph.h"
 
 void writeResults(Graph &g, uintV source, int* distance, int* path, std::string input_file_path) {
   std::string output_file_path = "./output" + input_file_path.substr(input_file_path.find_last_of("/"), input_file_path.length()) + "_s" + std::to_string(source) + ".out";
