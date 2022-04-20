@@ -9,9 +9,9 @@ make
 ## Run
 
 ```bash
-./serial --source 0 --inputFile absolute_path_of_input_graph
-./ParallelSSSP_BFS --source 0 --inputFile absolute_path_of_input_graph --nThreads 4
-./DistributedSSSP_Dijkstra --source 0 --inputFile absolute_path_of_input_graph
+./SeralSSSP --source 0 --inputFile absolute_path_of_input_graph
+./ParallelSSSP --source 0 --inputFile absolute_path_of_input_graph --nThreads 4
+./DistributedSSSP--source 0 --inputFile absolute_path_of_input_graph
 ```
 
 ## Output
