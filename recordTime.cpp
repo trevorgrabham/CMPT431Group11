@@ -2,7 +2,7 @@
 #include <iostream>
 #include "core/get_time.h"
 
-#include "serial.h"
+#include "core/serial.h"
 
 #define N_RUNS 1000
 
