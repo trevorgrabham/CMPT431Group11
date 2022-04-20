@@ -29,6 +29,8 @@ void writeResults(Graph &g, uintV source, int* distance, int* path, std::string 
 }
 
 void SSSP(int* dist, int* prev, Graph const &g, int source) {
+  timer t;
+  t.start();
   uintV V = g.n_;
   std::queue<int> Q;
   uintV vIndex;
@@ -57,4 +59,6 @@ void SSSP(int* dist, int* prev, Graph const &g, int source) {
       }
     }
   }
+  std::cout << "All existing shortest paths found\n"
+               "Time taken: " <<  t.stop() << "\n";
 }
