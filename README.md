@@ -25,8 +25,8 @@ make SSSP_parallel_ver1
 ```bash
 ./SSSP_parallel_ver1 --source 0 --inputFile absolute_path_of_input_graph --nThreads 4
 ```
-## Result
+## Binary
 
-<p>Input graph: web-Google (900000+ vertices)</p>
-<p>Thread # | #1 | #2 | #4 |<br />
-   Seconds | 4< | 30+ | 220+ |</p>
+```bash
+./demo-shortest-path ./testGraph.txt 3
+```
